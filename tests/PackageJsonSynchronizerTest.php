@@ -259,8 +259,6 @@ class PackageJsonSynchronizerTest extends TestCase
     {
         (new Filesystem())->copy($this->tempDir.'/stricter_constraints_package.json', $this->tempDir.'/package.json', true);
 
-        (new Filesystem())->copy($this->tempDir.'/stricter_constraints_package.json', $this->tempDir.'/package.json', true);
-
         $this->synchronizer->synchronize([
             [
                 'name' => 'symfony/existing-package',
@@ -315,6 +313,36 @@ class PackageJsonSynchronizerTest extends TestCase
    ]
 }',
             trim(file_get_contents($this->tempDir.'/package.json'))
+        );
+    }
+
+    public function testSymfonyPackagesInstalledFromNpmShouldNotBeUpdated()
+    {
+        (new Filesystem())->copy($this->tempDir.'/symfony_package_from_npm_package.json', $this->tempDir.'/package.json', true);
+
+        $this->synchronizer->synchronize([
+            [
+                'name' => 'symfony/existing-package',
+                'keywords' => ['symfony-ux'],
+            ],
+        ]);
+
+        // Should keep existing constraints when stricter than packages ones
+        $this->assertSame(
+            [
+                'name' => 'symfony/fixture',
+                'devDependencies' => [
+                    // this satisfies the constraint, so it's kept
+                    '@hotcookies/bar' => '^2',
+                    // this was too low, so it's replaced
+                    '@hotdogs/bun' => '^2',
+                    '@symfony/existing-package' => '^2.23.0',
+                ],
+                'browserslist' => [
+                    'defaults',
+                ],
+            ],
+            json_decode(file_get_contents($this->tempDir.'/package.json'), true)
         );
     }
 

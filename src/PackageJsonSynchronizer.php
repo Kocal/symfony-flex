@@ -197,7 +197,9 @@ class PackageJsonSynchronizer
                 $content['devDependencies'][$dependency] = $constraint;
                 $didChangePackageJson = true;
             } elseif ($constraint !== $content[$parentNode][$dependency]) {
-                if ($this->shouldUpdateConstraint($content[$parentNode][$dependency], $constraint)) {
+                if (str_starts_with($constraint, 'file:') && !str_starts_with($content[$parentNode][$dependency], 'file:')) {
+                    // If the package was already installed with a different method (e.g.: npm), don't overwrite it
+                } else if ($this->shouldUpdateConstraint($content[$parentNode][$dependency], $constraint)) {
                     $content[$parentNode][$dependency] = $constraint;
                     $didChangePackageJson = true;
                 }

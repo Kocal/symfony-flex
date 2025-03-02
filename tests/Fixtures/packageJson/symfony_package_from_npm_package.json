@@ -1,0 +1,11 @@
+{
+   "name": "symfony/fixture",
+   "devDependencies": {
+      "@hotcookies/bar": "^2",
+      "@hotdogs/bun": "^1.9",
+      "@symfony/existing-package": "^2.23.0"
+   },
+   "browserslist": [
+      "defaults"
+   ]
+}
